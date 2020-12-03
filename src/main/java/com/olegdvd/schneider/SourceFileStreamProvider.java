@@ -5,14 +5,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
-public class SourceFileStreamProvider {
+class SourceFileStreamProvider {
 
+    FileInputStream getInputSourceStream() {
 
-
-
-    public FileInputStream getInputSourceStream() {
-
-        String result;
         File sourceXlsxFile = new File("Schneider_Electric.xlsx");
         FileInputStream fileInputStream = null;
         try {
@@ -24,10 +20,8 @@ public class SourceFileStreamProvider {
         return fileInputStream;
     }
 
-    public FileOutputStream getOutputSourceStream() {
+    FileOutputStream getOutputSourceStream() {
 
-
-        String result;
         File destXlsxFile = new File("Schneider_Electric_out.xlsx");
         FileOutputStream fileOutputStream = null;
         try {

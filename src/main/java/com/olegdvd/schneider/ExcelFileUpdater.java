@@ -14,22 +14,17 @@ public class ExcelFileUpdater {
     private static final Logger LOG = LoggerFactory.getLogger(ExcelFileUpdater.class);
     private final UrlContentGrabber grabber;
 
-    public ExcelFileUpdater(UrlContentGrabber grabber) {
-        this.grabber = new UrlContentGrabber();
+    ExcelFileUpdater(UrlContentGrabber grabber) {
+        this.grabber = grabber;
     }
 
-    public boolean updateExcelFile(XSSFWorkbook wb, OutputStream fOP) {
+    boolean updateExcelFile(XSSFWorkbook wb, OutputStream fOP) {
         Sheet sheet = wb.getSheetAt(1);
         for (int i = 1; i < 10; i++) {
             Row row = sheet.getRow(i);
             String article = row.getCell(0).getStringCellValue();
             row.getCell(1).setCellValue(grabber.request(article));
         }
-//        for (Row row : sheet) {
-//            String article = row.getCell(0).getStringCellValue();
-//
-//            row.getCell(1).setCellValue(article);
-//        }
 
         try {
             wb.write(fOP);

@@ -1,2 +1,9 @@
 # Project exclude paths
 /target/
+*.iml
+/.idea/
+Schneider_Electric.xlsx
+Schneider_Electric_out.xlsx
+src/main/resources/
+typesofcells.xlsx
+
