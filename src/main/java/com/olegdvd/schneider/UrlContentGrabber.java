@@ -15,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 class UrlContentGrabber {
     private static final Logger LOG = LoggerFactory.getLogger(UrlContentGrabber.class);
     private static final String BASE_URL = "https://www.se.com/ww/en/product/";
+//    private static final String BASE_URL = "https://www.se.com/ua/uk/product/";
 
     String request(String article) {
         OkHttpClient client = new OkHttpClient();
@@ -32,13 +33,17 @@ class UrlContentGrabber {
 
         final int baseUrlLength = BASE_URL.length();
 
+        String result = "";
 
         try {
-            return URLDecoder.decode(response
+            result = URLDecoder.decode(response
                     .request()
-                    .urlString().substring(baseUrlLength + article.length()), StandardCharsets.UTF_8.name());
+                    .urlString().substring(baseUrlLength + article.length() + 1), StandardCharsets.UTF_8.name());
+            return result;
         } catch (UnsupportedEncodingException e) {
-            LOG.warn("Failed to URLdecode server response {}", response.request().urlString(), e);
+            LOG.warn("Failed to URLdecode server response {} and article: {}", result, article, e);
+        } catch (StringIndexOutOfBoundsException ex){
+            LOG.warn("Failed to process string [{}] of article: {} {}", result, article, ex.getMessage());
         }
 
         return String.valueOf(response.code());
