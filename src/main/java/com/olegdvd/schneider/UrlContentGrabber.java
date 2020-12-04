@@ -33,13 +33,17 @@ class UrlContentGrabber {
 
         final int baseUrlLength = BASE_URL.length();
 
+        String result = "";
 
         try {
-            return URLDecoder.decode(response
+            result = URLDecoder.decode(response
                     .request()
                     .url().toString().substring(baseUrlLength + article.length()), StandardCharsets.UTF_8.name());
+            return result;
         } catch (UnsupportedEncodingException e) {
-            LOG.warn("Failed to URLdecode server response {}", response.request().url().toString(), e);
+            LOG.warn("Failed to URLdecode server response {} and article: {}", result, article, e);
+        } catch (StringIndexOutOfBoundsException ex){
+            LOG.warn("Failed to process string [{}] of article: {} {}", result, article, ex.getMessage());
         }
 
         return String.valueOf(response.code());
