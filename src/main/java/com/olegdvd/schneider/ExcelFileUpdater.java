@@ -12,9 +12,10 @@ import java.io.OutputStream;
 public class ExcelFileUpdater {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExcelFileUpdater.class);
-    private final UrlContentGrabber grabber;
+    //private final UrlContentGrabber grabber;
+    private final Danfos grabber;
 
-    ExcelFileUpdater(UrlContentGrabber grabber) {
+    ExcelFileUpdater(Danfos grabber) {
         this.grabber = grabber;
     }
 

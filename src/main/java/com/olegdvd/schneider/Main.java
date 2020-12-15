@@ -22,7 +22,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        Main main = new Main(new ExcelFileUpdater(new UrlContentGrabber()), new SourceFileStreamProvider());
+        Main main = new Main(new ExcelFileUpdater(new Danfos()), new SourceFileStreamProvider());
 
         FileInputStream fIP = main.getFileProvider().getInputSourceStream();
         FileOutputStream fileOutputStream = main.getFileProvider().getOutputSourceStream();
