@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 public class Danfos {
 
@@ -29,22 +30,10 @@ public class Danfos {
 
     Danfos() {
     }
-/*
-
-    public static void main(String[] args) {
-        Danfos danfos = new Danfos();
-        Document pagetoDocument = danfos.getPagetoDocument("065B2010");
-
-        String itemName = pagetoDocument.select("td[class=name]").text();
-        String itemPrice = pagetoDocument.select("td[class=price]").text();
-        String itemLink = pagetoDocument.select("a[class=tdn]").attr("href");
-
-        LOG.info("Name: {}  Price: {} Link: {}", itemName, itemPrice, itemLink);
-    }
-*/
-
 
     protected String request(String materialId) {
+        if (isEmpty(materialId)) return "Error (Empty Article)";
+
         String fullUrl = getFullUrl(PAGED_URL, materialId);
         Optional<HttpUrl> url = Optional.ofNullable(HttpUrl.parse(fullUrl));
         if (url.isPresent()) {
@@ -55,17 +44,21 @@ public class Danfos {
             try {
                 Response response = CLIENT.newCall(request).execute();
                 LOG.info("Response from [{}] with: {}", fullUrl, response.code());
-                html = Objects.requireNonNull(response.body()).string();
+                if (response.code() == 200) {
+                    html = Objects.requireNonNull(response.body()).string();
+                }
             } catch (IOException e) {
                 LOG.error("Source server is unreachable or changed/wrong URL: {}", fullUrl);
             }
-            if (isEmpty(html)) return "";
+            if (isEmpty(html)) return "Error (Empty Server Response)";
             String data = GSON.fromJson(html, DanfosResponseContainer.class).getData();
 
             Document pagetoDocument = Jsoup.parse(data);
             String itemName = pagetoDocument.select("td[class=name]").text();
             String itemPrice = pagetoDocument.select("td[class=price]").text();
             String itemLink = pagetoDocument.select("a[class=tdn]").attr("href");
+            String dataUrl = pagetoDocument.select("a[class=change-qty]").attr("data-url");
+
             return itemName;
         }
         LOG.warn("Failed to scrap from URL: {}", fullUrl);

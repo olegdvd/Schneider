@@ -10,7 +10,7 @@ class SourceFileStreamProvider {
     FileInputStream getInputSourceStream() {
 
 //        File sourceXlsxFile = new File("Schneider_Electric.xlsx");
-        File sourceXlsxFile = new File("HE_price2020_EU_08.xlsx");
+        File sourceXlsxFile = new File("Danfoss_Price_Ukraine_03.02.2020_v01.xlsx");
         FileInputStream fileInputStream = null;
         try {
             fileInputStream = new FileInputStream(sourceXlsxFile);
@@ -23,7 +23,7 @@ class SourceFileStreamProvider {
 
     FileOutputStream getOutputSourceStream() {
 
-        File destXlsxFile = new File("HE_price2020_EU_08_out.xlsx");
+        File destXlsxFile = new File("Danfoss_Price_Ukraine_03.02.2020_v01_out.xlsx");
         FileOutputStream fileOutputStream = null;
         try {
             fileOutputStream = new FileOutputStream(destXlsxFile);
