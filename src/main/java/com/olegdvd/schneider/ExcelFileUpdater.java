@@ -24,7 +24,7 @@ public class ExcelFileUpdater {
     boolean updateExcelFile(XSSFWorkbook wb, OutputStream fOP) {
         Sheet sheet = wb.getSheetAt(1);
         int lastUsedRow = sheet.getLastRowNum();
-        lastUsedRow = 100;
+        lastUsedRow = 20;
         int pos = 1;
         int step = 10;
         long start = 0;
