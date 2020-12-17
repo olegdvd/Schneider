@@ -1,24 +1,27 @@
 package com.olegdvd.schneider.domain;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class DanfossGatheredData implements GatheredData {
 
-    private final List<String> keysList = Arrays.asList("name", "url", "price", "href");
+    private final Map<String, Integer> keysMap = new HashMap<String, Integer>() {{
+        put(KeysEnum.NAME.getCode(), 3);
+        put(KeysEnum.URL.getCode(), 15);
+        put(KeysEnum.PRICE.getCode(), 16);
+        put(KeysEnum.HREF.getCode(), 17);
+    }};
+
+
     private final Map<String, String> map;
 
     public DanfossGatheredData() {
-        this.map = keysList.stream()
-        .collect(Collectors.groupingBy(String::toString), toString());
+        this.map = generateMap();
     }
 
     @Override
-    public List<String> keys() {
-        return keysList;
+    public Map<String, Integer> keysMap() {
+        return keysMap;
     }
 
     @Override

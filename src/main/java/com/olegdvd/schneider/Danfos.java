@@ -1,6 +1,9 @@
 package com.olegdvd.schneider;
 
 import com.google.gson.Gson;
+import com.olegdvd.schneider.domain.DanfossGatheredData;
+import com.olegdvd.schneider.domain.GatheredData;
+import com.olegdvd.schneider.domain.KeysEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import okhttp3.HttpUrl;
@@ -15,8 +18,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.*;
 
 public class Danfos {
 
@@ -31,8 +33,12 @@ public class Danfos {
     Danfos() {
     }
 
-    protected String request(String materialId) {
-        if (isEmpty(materialId)) return "Error (Empty Article)";
+    protected GatheredData request(String materialId) {
+        GatheredData gatheredData = new DanfossGatheredData();
+        if (isEmpty(materialId)) {
+            gatheredData.data().put(KeysEnum.NAME.getCode(), "Error (Empty Article)");
+            return gatheredData;
+        }
 
         String fullUrl = getFullUrl(PAGED_URL, materialId);
         Optional<HttpUrl> url = Optional.ofNullable(HttpUrl.parse(fullUrl));
@@ -43,23 +49,26 @@ public class Danfos {
             String html = null;
             try {
                 Response response = CLIENT.newCall(request).execute();
-                LOG.info("Response from [{}] with: {}", fullUrl, response.code());
+                LOG.debug("Response from [{}] with: {}", fullUrl, response.code());
                 if (response.code() == 200) {
                     html = Objects.requireNonNull(response.body()).string();
                 }
             } catch (IOException e) {
                 LOG.error("Source server is unreachable or changed/wrong URL: {}", fullUrl);
             }
-            if (isEmpty(html)) return "Error (Empty Server Response)";
+            if (isEmpty(html)) {
+                gatheredData.data().put(KeysEnum.NAME.getCode(), "Error (Empty Server Response)");
+                return gatheredData;
+            }
             String data = GSON.fromJson(html, DanfosResponseContainer.class).getData();
 
             Document pagetoDocument = Jsoup.parse(data);
-            String itemName = pagetoDocument.select("td[class=name]").text();
-            String itemPrice = pagetoDocument.select("td[class=price]").text();
-            String itemLink = pagetoDocument.select("a[class=tdn]").attr("href");
-            String dataUrl = pagetoDocument.select("a[class=change-qty]").attr("data-url");
+            gatheredData.data().put(KeysEnum.NAME.getCode(), pagetoDocument.select("td[class=name]").text());
+            gatheredData.data().put(KeysEnum.PRICE.getCode(), pagetoDocument.select("td[class=price]").text());
+            gatheredData.data().put(KeysEnum.HREF.getCode(), pagetoDocument.select("a[class=tdn]").attr("href"));
+            gatheredData.data().put(KeysEnum.URL.getCode(), pagetoDocument.select("a[class=change-qty]").attr("data-url"));
 
-            return itemName;
+            return gatheredData;
         }
         LOG.warn("Failed to scrap from URL: {}", fullUrl);
         throw new RuntimeException("Failed to parse url: " + fullUrl);

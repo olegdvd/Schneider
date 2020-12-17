@@ -2,6 +2,7 @@ package com.olegdvd.schneider;
 
 import com.olegdvd.schneider.domain.DanfossGatheredData;
 import com.olegdvd.schneider.domain.GatheredData;
+import com.olegdvd.schneider.domain.KeysEnum;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.stream.IntStream;
 
 import static org.apache.poi.ss.usermodel.Row.MissingCellPolicy.CREATE_NULL_AS_BLANK;
@@ -28,10 +30,10 @@ public class ExcelFileUpdater {
     boolean updateExcelFile(XSSFWorkbook wb, OutputStream fOP) {
         Sheet sheet = wb.getSheetAt(0);
         int lastUsedRow = sheet.getLastRowNum();
-       //й!!! lastUsedRow = 20;
+//        lastUsedRow = 20;
         int pos = 1;
         int dataColumn = 2;
-        int step = 12;
+        int step = 100;
         long start = 0;
         long finish = 0;
         LOG.info("Available cores number: {}", Runtime.getRuntime().availableProcessors());
@@ -42,7 +44,7 @@ public class ExcelFileUpdater {
                     .forEach(rowNumber -> getArticleAndProcess(sheet, rowNumber, dataColumn));
             pos += step;
             finish = Instant.now().toEpochMilli();
-            LOG.info("{} steps takes {}sec", step, (float) (finish - start) / 1000);
+            LOG.info("{} rows processed, {} steps takes {}sec", pos, step, (float) (finish - start) / 1000);
         }
         try {
             wb.write(fOP);
@@ -67,21 +69,21 @@ public class ExcelFileUpdater {
         String article = null;
         try {
             article = row.getCell(dataColumn, CREATE_NULL_AS_BLANK).getStringCellValue();
-            String grabbedValue = grabber.request(article);
-            cellsMapper(row, grabbedValue);
+            GatheredData grabbedValue = grabber.request(article);
+            fullfillCells(grabbedValue, row);
         } catch (Exception e) {
             LOG.warn("Empty article with row index: {}",idx);
         }
 
     }
 
-    private void cellsMapper(Row row, String grabbedValue) {
-        GatheredData gatheredData = new DanfossGatheredData();
-        fullfillCells(gatheredData, row);
-
+    private void fullfillCells(GatheredData gatheredData, Row row) {
+        gatheredData.data().entrySet().stream()
+                .filter(entry -> Objects.nonNull(entry.getKey()))
+                .forEach( entry -> setCellsValue(row, entry.getValue(), gatheredData.keysMap().get(entry.getKey())));
     }
 
-    private void fullfillCells(GatheredData gatheredData, Row row) {
-        gatheredData.keys().forEach(key -> row.getCell(3, CREATE_NULL_AS_BLANK).setCellValue(key));
+    private void setCellsValue(Row row, String value, Integer index) {
+        row.getCell(index, CREATE_NULL_AS_BLANK).setCellValue(value);
     }
 }
