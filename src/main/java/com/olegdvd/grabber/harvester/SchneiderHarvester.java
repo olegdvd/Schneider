@@ -5,29 +5,23 @@ import com.olegdvd.grabber.domain.DanfossGatheredData;
 import com.olegdvd.grabber.domain.GatheredData;
 import com.olegdvd.grabber.domain.KeysEnum;
 import com.olegdvd.grabber.domain.WebClient;
-import okhttp3.HttpUrl;
-import okhttp3.Request;
-import okhttp3.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.Objects;
-import java.util.Optional;
-
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
-public class DanfossHarvester implements Harvester {
+public class SchneiderHarvester implements Harvester {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DanfossHarvester.class);
-
+    private static final Logger LOG = LoggerFactory.getLogger(SchneiderHarvester.class);
     private static final String PAGED_URL = "https://open.danfoss.ru/modal?route=search/index&success=popup&query=";
     private static final Gson GSON = new Gson();
+
     private final WebClient webClient;
 
-    public DanfossHarvester(WebClient webClient) {
+    public SchneiderHarvester(WebClient webClient) {
+
         this.webClient = webClient;
     }
 
@@ -55,8 +49,8 @@ public class DanfossHarvester implements Harvester {
 //            } catch (IOException e) {
 //                LOG.error("Source server is unreachable or changed/wrong URL: {}", fullUrl);
 //            }
-            String htmlString = webClient.makeServerCall(PAGED_URL, materialId);
-            if (isEmpty(htmlString)) {
+        String htmlString = webClient.makeServerCall(PAGED_URL, materialId);
+        if (isEmpty(htmlString)) {
                 gatheredData.data().put(KeysEnum.NAME.getCode(), "Error (Empty Server Response)");
                 return gatheredData;
             }
@@ -72,7 +66,11 @@ public class DanfossHarvester implements Harvester {
         }
 
 
-    private static class DanfosResponseContainer {
+    private String getFullUrl(String pagedUrl, String materialId) {
+        return pagedUrl + materialId;
+    }
+
+    static class DanfosResponseContainer {
 
         private String status;
         private String data;

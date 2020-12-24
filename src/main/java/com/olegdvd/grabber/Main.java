@@ -1,5 +1,6 @@
 package com.olegdvd.grabber;
 
+import com.olegdvd.grabber.domain.WebClient;
 import com.olegdvd.grabber.harvester.DanfossHarvester;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
@@ -38,7 +39,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        Main main = new Main(new ExcelFileUpdater(new DanfossHarvester()), new SourceFileStreamProvider());
+        Main main = new Main(new ExcelFileUpdater(new DanfossHarvester(new WebClient())), new SourceFileStreamProvider());
 
         FileInputStream fIP = main.getFileProvider().getInputSourceStream(inputFileName);
         FileOutputStream fileOutputStream = main.getFileProvider().getOutputSourceStream(outputFileName);

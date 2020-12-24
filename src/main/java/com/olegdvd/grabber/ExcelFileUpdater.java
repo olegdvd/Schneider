@@ -29,7 +29,7 @@ public class ExcelFileUpdater {
     boolean updateExcelFile(XSSFWorkbook wb, OutputStream fOP) {
         Sheet sheet = wb.getSheetAt(0);
         int lastUsedRow = sheet.getLastRowNum();
-//        lastUsedRow = 20;
+        lastUsedRow = 20;
         int pos = 1;
         int dataColumn = 2;
         int step = 100;
