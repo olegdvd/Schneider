@@ -3,19 +3,16 @@ package com.olegdvd.grabber.domain;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DanfossGatheredData implements GatheredData {
+public class SchneiderGatheredData implements GatheredData {
 
     private final Map<String, Integer> columnMap = new HashMap<String, Integer>() {{
-        put(KeysEnum.NAME.getCode(), 3);
-        put(KeysEnum.URL.getCode(), 15);
-        put(KeysEnum.PRICE.getCode(), 16);
-        put(KeysEnum.HREF.getCode(), 17);
-    }};
+        put(KeysEnum.NAME.getCode(), 2);
 
+    }};
 
     private final Map<String, String> map;
 
-    public DanfossGatheredData() {
+    public SchneiderGatheredData() {
         this.map = generateMap();
     }
 

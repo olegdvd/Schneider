@@ -77,9 +77,9 @@ public class ExcelFileUpdater {
     }
 
     private void fullfillCells(GatheredData gatheredData, Row row) {
-        gatheredData.data().entrySet().stream()
+        gatheredData.gatheringTemplate().entrySet().stream()
                 .filter(entry -> Objects.nonNull(entry.getKey()))
-                .forEach( entry -> setCellsValue(row, entry.getValue(), gatheredData.keysMap().get(entry.getKey())));
+                .forEach( entry -> setCellsValue(row, entry.getValue(), gatheredData.columnIndexes().get(entry.getKey())));
     }
 
     private void setCellsValue(Row row, String value, Integer index) {

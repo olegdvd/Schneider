@@ -5,17 +5,10 @@ import com.olegdvd.grabber.domain.DanfossGatheredData;
 import com.olegdvd.grabber.domain.GatheredData;
 import com.olegdvd.grabber.domain.KeysEnum;
 import com.olegdvd.grabber.domain.WebClient;
-import okhttp3.HttpUrl;
-import okhttp3.Request;
-import okhttp3.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.util.Objects;
-import java.util.Optional;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
@@ -35,38 +28,21 @@ public class DanfossHarvester implements Harvester {
     public GatheredData request(String materialId) {
         GatheredData gatheredData = new DanfossGatheredData();
         if (isEmpty(materialId)) {
-            gatheredData.data().put(KeysEnum.NAME.getCode(), "Error (Empty Article)");
+            gatheredData.gatheringTemplate().put(KeysEnum.NAME.getCode(), "Error (Empty Article)");
             return gatheredData;
         }
-
-//        String fullUrl = getFullUrl(PAGED_URL, materialId);
-//        Optional<HttpUrl> url = Optional.ofNullable(HttpUrl.parse(fullUrl));
-//        if (url.isPresent()) {
-//            Request request = new Request.Builder().url(url.get())
-//                    .addHeader("Cookie", "")
-//                    .get().build();
-//            String htmlString = null;
-//            try {
-//                Response response = WebClient.CLIENT.newCall(request).execute();
-//                LOG.debug("Response from [{}] with: {}", fullUrl, response.code());
-//                if (response.code() == 200) {
-//                    htmlString = Objects.requireNonNull(response.body()).string();
-//                }
-//            } catch (IOException e) {
-//                LOG.error("Source server is unreachable or changed/wrong URL: {}", fullUrl);
-//            }
-            String htmlString = webClient.makeServerCall(PAGED_URL, materialId);
+            String htmlString = webClient.getJSONFromResponseBody(PAGED_URL, materialId);
             if (isEmpty(htmlString)) {
-                gatheredData.data().put(KeysEnum.NAME.getCode(), "Error (Empty Server Response)");
+                gatheredData.gatheringTemplate().put(KeysEnum.NAME.getCode(), "Error (Empty Server Response)");
                 return gatheredData;
             }
             String data = GSON.fromJson(htmlString, DanfosResponseContainer.class).getData();
 
             Document pagetoDocument = Jsoup.parse(data);
-            gatheredData.data().put(KeysEnum.NAME.getCode(), pagetoDocument.select("td[class=name]").text());
-            gatheredData.data().put(KeysEnum.PRICE.getCode(), pagetoDocument.select("td[class=price]").text());
-            gatheredData.data().put(KeysEnum.HREF.getCode(), pagetoDocument.select("a[class=tdn]").attr("href"));
-            gatheredData.data().put(KeysEnum.URL.getCode(), pagetoDocument.select("a[class=change-qty]").attr("data-url"));
+            gatheredData.gatheringTemplate().put(KeysEnum.NAME.getCode(), pagetoDocument.select("td[class=name]").text());
+            gatheredData.gatheringTemplate().put(KeysEnum.PRICE.getCode(), pagetoDocument.select("td[class=price]").text());
+            gatheredData.gatheringTemplate().put(KeysEnum.HREF.getCode(), pagetoDocument.select("a[class=tdn]").attr("href"));
+            gatheredData.gatheringTemplate().put(KeysEnum.URL.getCode(), pagetoDocument.select("a[class=change-qty]").attr("data-url"));
 
             return gatheredData;
         }
