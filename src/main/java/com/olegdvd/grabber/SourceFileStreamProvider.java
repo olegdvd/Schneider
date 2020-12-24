@@ -1,4 +1,4 @@
-package com.olegdvd.schneider;
+package com.olegdvd.grabber;
 
 import java.io.File;
 import java.io.FileInputStream;

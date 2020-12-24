@@ -1,9 +1,9 @@
-package com.olegdvd.schneider;
+package com.olegdvd.grabber.harvester;
 
 import com.google.gson.Gson;
-import com.olegdvd.schneider.domain.DanfossGatheredData;
-import com.olegdvd.schneider.domain.GatheredData;
-import com.olegdvd.schneider.domain.KeysEnum;
+import com.olegdvd.grabber.domain.DanfossGatheredData;
+import com.olegdvd.grabber.domain.GatheredData;
+import com.olegdvd.grabber.domain.KeysEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import okhttp3.HttpUrl;
@@ -20,9 +20,9 @@ import java.util.concurrent.TimeUnit;
 
 import static org.apache.commons.lang3.StringUtils.*;
 
-public class Danfos {
+public class DanfossHarvester implements Harvester {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Danfos.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DanfossHarvester.class);
     private static final OkHttpClient CLIENT = new OkHttpClient.Builder()
             .retryOnConnectionFailure(true)
             .connectTimeout(15, TimeUnit.SECONDS)
@@ -30,10 +30,11 @@ public class Danfos {
     private static final String PAGED_URL = "https://open.danfoss.ru/modal?route=search/index&success=popup&query=";
     private static final Gson GSON = new Gson();
 
-    Danfos() {
+    public DanfossHarvester() {
     }
 
-    protected GatheredData request(String materialId) {
+    @Override
+    public GatheredData request(String materialId) {
         GatheredData gatheredData = new DanfossGatheredData();
         if (isEmpty(materialId)) {
             gatheredData.data().put(KeysEnum.NAME.getCode(), "Error (Empty Article)");
@@ -44,7 +45,7 @@ public class Danfos {
         Optional<HttpUrl> url = Optional.ofNullable(HttpUrl.parse(fullUrl));
         if (url.isPresent()) {
             Request request = new Request.Builder().url(url.get())
-                    .addHeader("Cookie", "" )
+                    .addHeader("Cookie", "")
                     .get().build();
             String html = null;
             try {
@@ -77,4 +78,36 @@ public class Danfos {
     private String getFullUrl(String pagedUrl, String materialId) {
         return pagedUrl + materialId;
     }
+
+    static class DanfosResponseContainer {
+
+        private String status;
+        private String data;
+
+        public DanfosResponseContainer() {
+        }
+
+        public DanfosResponseContainer(String status, String data) {
+            this.status = status;
+            this.data = data;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+
+        public void setStatus(String status) {
+            this.status = status;
+        }
+
+        public String getData() {
+            return data;
+        }
+
+        public void setData(String data) {
+            this.data = data;
+        }
+    }
+
 }
+

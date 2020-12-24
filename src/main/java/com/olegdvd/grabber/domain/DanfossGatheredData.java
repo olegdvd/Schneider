@@ -1,4 +1,4 @@
-package com.olegdvd.schneider.domain;
+package com.olegdvd.grabber.domain;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package com.olegdvd.schneider.domain;
+package com.olegdvd.grabber.domain;
 
 import java.util.Map;
 import java.util.stream.Collectors;

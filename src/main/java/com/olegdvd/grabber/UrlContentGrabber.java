@@ -1,4 +1,4 @@
-package com.olegdvd.schneider;
+package com.olegdvd.grabber;
 
 import okhttp3.Call;
 import okhttp3.OkHttpClient;

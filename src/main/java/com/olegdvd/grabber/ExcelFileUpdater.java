@@ -1,8 +1,7 @@
-package com.olegdvd.schneider;
+package com.olegdvd.grabber;
 
-import com.olegdvd.schneider.domain.DanfossGatheredData;
-import com.olegdvd.schneider.domain.GatheredData;
-import com.olegdvd.schneider.domain.KeysEnum;
+import com.olegdvd.grabber.domain.GatheredData;
+import com.olegdvd.grabber.harvester.DanfossHarvester;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -21,9 +20,9 @@ public class ExcelFileUpdater {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExcelFileUpdater.class);
     //private final UrlContentGrabber grabber;
-    private final Danfos grabber;
+    private final DanfossHarvester grabber;
 
-    ExcelFileUpdater(Danfos grabber) {
+    ExcelFileUpdater(DanfossHarvester grabber) {
         this.grabber = grabber;
     }
 
