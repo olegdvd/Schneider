@@ -7,10 +7,9 @@ import java.io.FileOutputStream;
 
 class SourceFileStreamProvider {
 
-    FileInputStream getInputSourceStream() {
+    FileInputStream getInputSourceStream(String fileName) {
 
-//        File sourceXlsxFile = new File("Schneider_Electric.xlsx");
-        File sourceXlsxFile = new File("Danfoss_Price_Ukraine_03.02.2020_v01.xlsx");
+        File sourceXlsxFile = new File(fileName);
         FileInputStream fileInputStream = null;
         try {
             fileInputStream = new FileInputStream(sourceXlsxFile);
@@ -21,9 +20,9 @@ class SourceFileStreamProvider {
         return fileInputStream;
     }
 
-    FileOutputStream getOutputSourceStream() {
+    FileOutputStream getOutputSourceStream(String fileName) {
 
-        File destXlsxFile = new File("Danfoss_Price_Ukraine_03.02.2020_v01_out.xlsx");
+        File destXlsxFile = new File(fileName);
         FileOutputStream fileOutputStream = null;
         try {
             fileOutputStream = new FileOutputStream(destXlsxFile);

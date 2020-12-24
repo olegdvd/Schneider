@@ -14,6 +14,8 @@ public class Main {
     private static final Logger LOG = LoggerFactory.getLogger(Main.class);
     private final ExcelFileUpdater fileUpdater;
     private final SourceFileStreamProvider fileProvider;
+    //  String fileName "Schneider_Electric.xlsx";
+    String fileName = "Danfoss_Price_Ukraine_03.02.2020_v01.xlsx";
 
     private Main(ExcelFileUpdater fileUpdater, SourceFileStreamProvider fileProvider1) {
         this.fileUpdater = fileUpdater;
