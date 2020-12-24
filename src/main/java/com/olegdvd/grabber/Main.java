@@ -14,15 +14,15 @@ import java.util.Objects;
 public class Main {
 
     private static final Logger LOG = LoggerFactory.getLogger(Main.class);
+    private static final String DANFOSS = "danfoss";
+    private static final String SCHNEIDER = "schneider";
     private final ExcelFileUpdater fileUpdater;
     private final SourceFileStreamProvider fileProvider;
 
     private static String inputFileName;
     private static String outputFileName;
 
-    static {
-        //  String fileName "Schneider_Electric.xlsx";
-        String fileName = "Danfoss_Price_Ukraine_03.02.2020_v01";
+    private static void fileNameProvider(String fileName) {
         String out = "_out";
         String fileSeparator = ".";
         String extension = "xlsx";
@@ -31,15 +31,33 @@ public class Main {
     }
 
 
-
     private Main(ExcelFileUpdater fileUpdater, SourceFileStreamProvider fileProvider1) {
         this.fileUpdater = fileUpdater;
         this.fileProvider = fileProvider1;
     }
 
     public static void main(String[] args) throws Exception {
+        Main main = null;
+        String fileName = "";
+        if (args.length > 0) {
+            if (DANFOSS.equalsIgnoreCase(args[0])) {
+                fileNameProvider("Danfoss_Price_Ukraine_03.02.2020_v01");
+                main = new Main(new ExcelFileUpdater(new DanfossHarvester(new WebClient())), new SourceFileStreamProvider());
 
-        Main main = new Main(new ExcelFileUpdater(new DanfossHarvester(new WebClient())), new SourceFileStreamProvider());
+            } else if (SCHNEIDER.equalsIgnoreCase(args[0])) {
+                fileNameProvider("Schneider_Electric");
+                main = new Main(new ExcelFileUpdater(new DanfossHarvester(new WebClient())), new SourceFileStreamProvider());
+
+            } else {
+                //TODO react to wrong ARGUMENT
+            }
+        } else {
+            //TODO react to no ARGUMENT
+            throw new IllegalArgumentException("Please provide \"Danfoss\" or \"Schneider\" paremeter to start.");
+        }
+
+
+        //TODO react to NPE from FileProvider
 
         FileInputStream fIP = main.getFileProvider().getInputSourceStream(inputFileName);
         FileOutputStream fileOutputStream = main.getFileProvider().getOutputSourceStream(outputFileName);
