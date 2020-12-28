@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 public interface GatheredData {
 
     /**
-     * Returns mapping of predefined names to Excel column indexes (1-based)
+     * Returns mapping of predefined names to Excel column indexes (0-based)
      * @see KeysEnum
      *
      *

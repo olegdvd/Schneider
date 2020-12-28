@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 public class DanfossHarvester implements Harvester {
 
@@ -27,14 +28,10 @@ public class DanfossHarvester implements Harvester {
     @Override
     public GatheredData request(String materialId) {
         GatheredData gatheredData = new DanfossGatheredData();
-        if (isEmpty(materialId)) {
-            gatheredData.gatheringTemplate().put(KeysEnum.NAME.getCode(), "Error (Empty Article)");
-            return gatheredData;
-        }
+        if (isNotEmpty(materialId)) {
             String htmlString = webClient.getJSONFromResponseBody(PAGED_URL, materialId);
             if (isEmpty(htmlString)) {
                 gatheredData.gatheringTemplate().put(KeysEnum.NAME.getCode(), "Error (Empty Server Response)");
-                return gatheredData;
             }
             String data = GSON.fromJson(htmlString, DanfosResponseContainer.class).getData();
 
@@ -43,9 +40,18 @@ public class DanfossHarvester implements Harvester {
             gatheredData.gatheringTemplate().put(KeysEnum.PRICE.getCode(), pagetoDocument.select("td[class=price]").text());
             gatheredData.gatheringTemplate().put(KeysEnum.HREF.getCode(), pagetoDocument.select("a[class=tdn]").attr("href"));
             gatheredData.gatheringTemplate().put(KeysEnum.URL.getCode(), pagetoDocument.select("a[class=change-qty]").attr("data-url"));
-
-            return gatheredData;
+        } else {
+            gatheredData.gatheringTemplate().put(KeysEnum.NAME.getCode(), "Error (Empty Article)");
         }
+
+        return gatheredData;
+    }
+
+    @Override
+    public int getDataColumnNumber() {
+        // Number of column in Excel file where article (matherialId) is stored. (0-based)
+        return 2;
+    }
 
 
     private static class DanfosResponseContainer {

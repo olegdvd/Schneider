@@ -1,7 +1,7 @@
 package com.olegdvd.grabber;
 
 import com.olegdvd.grabber.domain.GatheredData;
-import com.olegdvd.grabber.harvester.DanfossHarvester;
+import com.olegdvd.grabber.harvester.Harvester;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -20,19 +20,24 @@ public class ExcelFileUpdater {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExcelFileUpdater.class);
     //private final UrlContentGrabber grabber;
-    private final DanfossHarvester grabber;
+    private final Harvester grabber;
 
-    ExcelFileUpdater(DanfossHarvester grabber) {
+    ExcelFileUpdater(Harvester grabber) {
         this.grabber = grabber;
     }
 
-    boolean updateExcelFile(XSSFWorkbook wb, OutputStream fOP) {
-        Sheet sheet = wb.getSheetAt(0);
+    boolean updateExcelFile(XSSFWorkbook wb, String sheetName, OutputStream fOP) {
+
+        Sheet sheet = wb.getSheet(sheetName);
+        if (Objects.isNull(sheet)) {
+            throw new IllegalArgumentException(String.format("Sheet with name %s not found in workbook %s", sheetName, wb.toString()));
+        }
+
         int lastUsedRow = sheet.getLastRowNum();
-        lastUsedRow = 20;
+        lastUsedRow = 1000;
         int pos = 1;
-        int dataColumn = 2;
-        int step = 100;
+        int dataColumn = this.grabber.getDataColumnNumber();
+        int step = 50;
         long start = 0;
         long finish = 0;
         LOG.info("Available cores number: {}", Runtime.getRuntime().availableProcessors());
@@ -47,8 +52,6 @@ public class ExcelFileUpdater {
         }
         try {
             wb.write(fOP);
-
-
             LOG.info("File was updated successfully. {} cells processed. {}", pos, fOP.toString());
         } catch (IOException e) {
             LOG.warn("Failed to open/write to file {}", fOP);
@@ -71,7 +74,7 @@ public class ExcelFileUpdater {
             GatheredData grabbedValue = grabber.request(article);
             fullfillCells(grabbedValue, row);
         } catch (Exception e) {
-            LOG.warn("Empty article with row index: {}",idx);
+            LOG.warn("Empty article with row index: {}", idx);
         }
 
     }
@@ -79,7 +82,7 @@ public class ExcelFileUpdater {
     private void fullfillCells(GatheredData gatheredData, Row row) {
         gatheredData.gatheringTemplate().entrySet().stream()
                 .filter(entry -> Objects.nonNull(entry.getKey()))
-                .forEach( entry -> setCellsValue(row, entry.getValue(), gatheredData.columnIndexes().get(entry.getKey())));
+                .forEach(entry -> setCellsValue(row, entry.getValue(), gatheredData.columnIndexes().get(entry.getKey())));
     }
 
     private void setCellsValue(Row row, String value, Integer index) {

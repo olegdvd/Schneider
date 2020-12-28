@@ -6,7 +6,7 @@ import java.util.Map;
 public class SchneiderGatheredData implements GatheredData {
 
     private final Map<String, Integer> columnMap = new HashMap<String, Integer>() {{
-        put(KeysEnum.NAME.getCode(), 2);
+        put(KeysEnum.NAME.getCode(), 1);
 
     }};
 
@@ -16,6 +16,9 @@ public class SchneiderGatheredData implements GatheredData {
         this.map = generateMap();
     }
 
+    /**
+     * {@inheritDoc}}
+     */
     @Override
     public Map<String, Integer> columnIndexes() {
         return columnMap;
